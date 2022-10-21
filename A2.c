@@ -8,6 +8,12 @@
 #define MAX_LINE 80
 #define MAX_HISTORY 10
 
+//Sources used
+//https://www.programiz.com/c-programming/library-function/string.h/strcpy - strcpy
+//https://www.programiz.com/c-programming/library-function/ctype.h/isdigit#:~:text=The%20isdigit()%20function%20checks,0%2D9)%20or%20not. - isdigit
+//https://www.tutorialspoint.com/c_standard_library/c_function_memset.htm - memset
+//https://www.geeksforgeeks.org/multidimensional-arrays-c-cpp/ - 2d array
+
 int main(){
 	char *args[MAX_LINE/2 + 1];
 	char cmdLineInput[MAX_LINE];
@@ -138,5 +144,5 @@ int main(){
 			wait(&wait_status);
 		}
 	}
-	exit(0);
+	return 0;
 }
