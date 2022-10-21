@@ -16,9 +16,10 @@ int main(){
 	int i;
 	
 	int historyTracker = 0;
+	int historyCalled;
 	int historyID[MAX_HISTORY];
 	int historyPID[MAX_HISTORY];
-	char historyCommand[10][MAX_LINE];
+	char historyCommand[MAX_HISTORY][MAX_LINE];
 	
 	while(should_run == 1){
 		memset(args, 0, sizeof(args));
@@ -46,13 +47,11 @@ int main(){
 		
 		currentInput[strlen(currentInput)-1]= '\0';
 		
-		pid_t pid;
-		pid = fork(); //fork a child process
-		
 		if(strcmp(args[0], "exit") == 0){
 			should_run = 0;
 			break;
 		}else if(strcmp(args[0], "history") == 0){
+			historyCalled = 0;
 			int j;
 			if(historyTracker > 0){
 				printf("ID\tPID\tCommand\n");
@@ -62,24 +61,28 @@ int main(){
 			}else{
 				printf("No commands recorded yet\n");
 			}
-		}else{			
-			if(historyTracker < 10){
-				historyID[historyTracker] = historyTracker+1;
-				historyPID[historyTracker] = pid;
-				strcpy(historyCommand[historyTracker], currentInput);
-				historyTracker++;
-			}else{
-				int l;
-				for(l = 0; l < 9; l++){
-					historyID[l] = historyID[l + 1];
-					historyPID[l] = historyPID[l + 1];
-					strcpy(historyCommand[l], historyCommand[l+1]);
-				}
-				historyID[l] = 10;
-				historyPID[l] = pid;
-				strcpy(historyCommand[l], currentInput);				
-			}
+		}else{
+			historyCalled = 1;
 		}
+		
+		pid_t pid;
+		pid = fork(); //fork a child process
+		
+		if(historyTracker < 10 && historyCalled == 1){
+			historyID[historyTracker] = historyTracker+1;
+			historyPID[historyTracker] = pid;
+			strcpy(historyCommand[historyTracker], currentInput);
+			historyTracker++;
+		}else if(historyCalled == 1){
+			int l;
+			for(l = 0; l < 9; l++){
+				historyPID[l] = historyPID[l + 1];
+				strcpy(historyCommand[l], historyCommand[l+1]);
+			}
+			historyID[l] = 10;
+			historyPID[l] = pid;
+			strcpy(historyCommand[l], currentInput);				
+		}		
 		
 		if(pid < 0){
 			printf("Error: Process failed\n");
